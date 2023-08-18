@@ -1,10 +1,11 @@
 {
   "name": "so-rollup-plugins-utils",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Simple Organization",
   "scripts": {
     "build": "tsc && rollup -c",
-    "dev": "rollup -c -w"
+    "dev": "rollup -c -w",
+    "prepack": "npm run build"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.4",
