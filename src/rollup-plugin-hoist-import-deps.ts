@@ -1,10 +1,10 @@
-import { walk } from 'estree-walker';
-import MagicString from 'magic-string';
+import { walk } from "estree-walker";
+import MagicString from "magic-string";
 
 //
 //
 
-const VIRTUAL_ID_IMPORT = 'preloaddeps:import';
+const VIRTUAL_ID_IMPORT = "preloaddeps:import";
 const MARKER = '"__IMPORT_DEPS__"';
 
 //
@@ -12,10 +12,10 @@ const MARKER = '"__IMPORT_DEPS__"';
 
 function canonicalize(path) {
   // Remove leading and trailing '/' from basePath.
-  if (path.startsWith('/')) {
+  if (path.startsWith("/")) {
     path = path.substring(1);
   }
-  if (path.endsWith('/')) {
+  if (path.endsWith("/")) {
     path = path.substring(0, path.length - 1);
   }
   return path;
@@ -37,27 +37,27 @@ function canonicalize(path) {
 export function hoistImportDeps(options) {
   options = options || {};
   options.baseUrl =
-    typeof options.baseUrl === 'string' ? canonicalize(options.baseUrl) : null;
+    typeof options.baseUrl === "string" ? canonicalize(options.baseUrl) : null;
 
   // Get the static deps of a chunk and return them as list of strings
   // that can be passed as arguments to module preload method(__loadeDeps).
   const getDeps = (chunkName, caller, bundle) => {
-    let name = chunkName.startsWith('./') ? chunkName.substring(2) : chunkName;
+    let name = chunkName.startsWith("./") ? chunkName.substring(2) : chunkName;
 
     const chunk = bundle[name];
     if (chunk && chunk.imports.length > 0) {
       const ret = chunk.imports
         .filter((s) => s !== caller)
         .map((s) => `"./${s}"`)
-        .join(',');
+        .join(",");
       return ret;
     } else {
-      return '';
+      return "";
     }
   };
 
   return {
-    name: 'hoist-import-deps',
+    name: "hoist-import-deps",
 
     resolveId(id) {
       if (id === VIRTUAL_ID_IMPORT) {
@@ -130,7 +130,7 @@ export function __loadDeps(baseImport, ...deps) {
         ast = this.parse(code);
       } catch (err) {
         this.warn({
-          code: 'PARSE_ERROR',
+          code: "PARSE_ERROR",
           message: `rollup-plugin-hoist-import-deps: failed to parse ${id}.\n${err}`,
         });
       }
@@ -142,9 +142,9 @@ export function __loadDeps(baseImport, ...deps) {
       let hasDynamicImport = false;
       walk(ast, {
         enter(node) {
-          if (node.type === 'ImportExpression') {
+          if (node.type === "ImportExpression") {
             hasDynamicImport = true;
-            magicString.prependLeft(node.start, '__loadDeps(');
+            magicString.prependLeft(node.start, "__loadDeps(");
             magicString.appendRight(node.end, `, ${MARKER})`);
           }
         },
@@ -153,7 +153,7 @@ export function __loadDeps(baseImport, ...deps) {
         return null;
       } else {
         magicString.prepend(
-          `import {__loadDeps} from '${VIRTUAL_ID_IMPORT}';\n`,
+          `import {__loadDeps} from '${VIRTUAL_ID_IMPORT}';\n`
         );
 
         return {
@@ -178,7 +178,7 @@ export function __loadDeps(baseImport, ...deps) {
     generateBundle(_, bundle) {
       for (const chunkName of Object.keys(bundle)) {
         const chunk = bundle[chunkName];
-        if (chunk.type !== 'chunk' || chunk.dynamicImports.length === 0) {
+        if (chunk.type !== "chunk" || chunk.dynamicImports.length === 0) {
           continue;
         }
 
@@ -189,7 +189,7 @@ export function __loadDeps(baseImport, ...deps) {
           ast = this.parse(code);
         } catch (err) {
           this.warn({
-            code: 'PARSE_ERROR',
+            code: "PARSE_ERROR",
             message: `rollup-plugin-hoist-import-deps: failed to parse ${chunk.fileName}.\n${err}`,
           });
         }
@@ -201,14 +201,14 @@ export function __loadDeps(baseImport, ...deps) {
 
         walk(ast, {
           enter(node, parent) {
-            let importChunkName = null;
-            if (node.type === 'Literal' && node.raw === MARKER) {
-              const importExpr = parent.arguments[0];
+            let importChunkName: any = null;
+            if (node.type === "Literal" && node.raw === MARKER) {
+              const importExpr = parent!.arguments[0];
               if (!importExpr) {
                 return;
               }
 
-              if (importExpr.type === 'ImportExpression') {
+              if (importExpr.type === "ImportExpression") {
                 // ESM output
                 importChunkName = importExpr.source
                   ? importExpr.source.value
@@ -217,7 +217,7 @@ export function __loadDeps(baseImport, ...deps) {
                 // non-ESM creates crazy Promise wrapper. Just walk it again to find the chunk name in it.
                 walk(importExpr, {
                   enter(node) {
-                    if (node.type === 'Literal') {
+                    if (node.type === "Literal") {
                       importChunkName = node.value;
                     }
                   },
@@ -227,12 +227,12 @@ export function __loadDeps(baseImport, ...deps) {
                 magicString.overwrite(
                   importExpr.start,
                   importExpr.end,
-                  `"${importChunkName}"`,
+                  `"${importChunkName}"`
                 );
                 magicString.overwrite(
                   node.start,
                   node.end,
-                  getDeps(importChunkName, chunkName, bundle),
+                  getDeps(importChunkName, chunkName, bundle)
                 );
               }
             }
