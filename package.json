@@ -1,5 +1,5 @@
 {
-  "name": "rollup-plugins-utils",
+  "name": "so-rollup-plugins-utils",
   "version": "0.1.0",
   "author": "Simple Organization",
   "scripts": {
@@ -19,28 +19,10 @@
     "rollup-plugin-esbuild": "^5.0.0",
     "typescript": "^5.1.6"
   },
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "default": "./dist/index.js"
-    },
-    "./svelte-actions": {
-      "types": "./dist/svelte-actions.d.ts",
-      "default": "./dist/svelte-actions.js"
-    },
-    "./AppFrameSvelte.svelte": {
-      "default": "./AppFrameSvelte.svelte"
-    },
-    "./solid": {
-      "types": "./dist/solid.d.ts",
-      "default": "./dist/solid.jsx"
-    },
-    "./rollup-routes-plugin": {
-      "types": "./dist/rollup-routes-plugin.d.ts",
-      "default": "./dist/rollup-routes-plugin.js"
-    }
-  },
-  "files": [ "dist" ],
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
   "type": "module",
   "types": "dist/index.d.ts"
 }

@@ -1,7 +1,12 @@
+import type { Plugin } from 'rollup';
+
+//
+//
+
 export type RenameChunkOptions = {
   oldName: string;
   newName: string;
-}
+};
 
 /**
  * Cria um plugin Rollup que renomeia um chunk após a build.
@@ -20,8 +25,10 @@ export type RenameChunkOptions = {
  *   ],
  * };
  */
-export function renameChunkPlugin(options: RenameChunkOptions) {
+export function renameChunkPlugin(options: RenameChunkOptions): Plugin {
   return {
+    name: 'rename-chunk-plugin',
+
     /**
      * Função chamada após a geração dos bundles.
      *
