@@ -1,0 +1,46 @@
+{
+  "name": "rollup-plugins-utils",
+  "version": "0.1.0",
+  "author": "Simple Organization",
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "dev": "rollup -c -w"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.4",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "acorn-jsx": "^5.3.2",
+    "esbuild": "0.19.2",
+    "estree-walker": "^3.0.3",
+    "magic-string": "^0.30.2",
+    "prettier": "3.0.2",
+    "rollup": "^3.28.0",
+    "rollup-plugin-dts": "^5.3.1",
+    "rollup-plugin-esbuild": "^5.0.0",
+    "typescript": "^5.1.6"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "default": "./dist/index.js"
+    },
+    "./svelte-actions": {
+      "types": "./dist/svelte-actions.d.ts",
+      "default": "./dist/svelte-actions.js"
+    },
+    "./AppFrameSvelte.svelte": {
+      "default": "./AppFrameSvelte.svelte"
+    },
+    "./solid": {
+      "types": "./dist/solid.d.ts",
+      "default": "./dist/solid.jsx"
+    },
+    "./rollup-routes-plugin": {
+      "types": "./dist/rollup-routes-plugin.d.ts",
+      "default": "./dist/rollup-routes-plugin.js"
+    }
+  },
+  "files": [ "dist" ],
+  "type": "module",
+  "types": "dist/index.d.ts"
+}
