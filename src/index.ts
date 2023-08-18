@@ -1,3 +1,4 @@
-export { hoistImportDeps } from './rollup-plugin-hoist-import-deps'
-export { preserveJSX } from './rollup-plugin-preserve-jsx'
-export { renameChunkPlugin } from './rollup-plugin-rename-chunk'
+export { hoistImportDeps } from './hoistImportDeps'
+export { preserveJSX } from './preserveJSX'
+export { renameChunkPlugin } from './renameChunkPlugin'
+export { removeImportLines } from './removeImportLines'
