@@ -1,6 +1,6 @@
 {
   "name": "so-rollup-plugins-utils",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "author": "Simple Organization",
   "scripts": {
     "build": "tsc && rollup -c",
@@ -23,6 +23,7 @@
     "dist/index.js",
     "dist/index.d.ts"
   ],
+  "main": "dist/index.js",
   "type": "module",
   "types": "dist/index.d.ts"
 }
