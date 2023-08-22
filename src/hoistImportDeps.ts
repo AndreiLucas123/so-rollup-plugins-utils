@@ -50,7 +50,12 @@ export function hoistImportDeps(options: HoistImportDepsOptions): Plugin {
     if (chunk && 'imports' in chunk && chunk.imports.length > 0) {
       const ret = chunk.imports
         .filter((s) => s !== caller)
-        .map((s) => `"./${s}"`)
+        .map((s) => {
+          if (/^https?:\/\//.test(s) || s.startsWith('/')) {
+            return `"${s}"`;
+          }
+          return `"./${s}"`;
+        })
         .join(',');
       return ret;
     } else {

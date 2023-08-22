@@ -1,6 +1,6 @@
 {
   "name": "so-rollup-plugins-utils",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "author": "Simple Organization",
   "scripts": {
     "build": "tsc && rollup -c",
