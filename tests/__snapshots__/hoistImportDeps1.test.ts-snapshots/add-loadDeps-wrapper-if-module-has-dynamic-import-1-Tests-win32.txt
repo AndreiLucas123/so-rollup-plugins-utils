@@ -1,0 +1,6 @@
+import {__loadDeps} from 'preloaddeps:import';
+
+function load() {
+  const module = __loadDeps(import('./module'), "__IMPORT_DEPS__");
+  console.log(module);
+};
