@@ -1,12 +1,12 @@
-import type { Plugin, OutputBundle } from 'rollup';
+import type { Plugin, OutputBundle, AcornNode } from 'rollup';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 
 //
 //
 
-const VIRTUAL_ID_IMPORT = 'preloaddeps:import';
-const MARKER = '"__IMPORT_DEPS__"';
+export const VIRTUAL_ID_IMPORT = 'preloaddeps:import';
+export const MARKER = '"__IMPORT_DEPS__"';
 
 //
 //
@@ -26,7 +26,8 @@ function canonicalize(path: string) {
 //
 
 export type HoistImportDepsOptions = {
-  baseUrl: string;
+  baseUrl?: string;
+  sourceMap?: boolean;
 };
 
 /**
@@ -36,14 +37,14 @@ export type HoistImportDepsOptions = {
  * - Removed the `amd` option.
  * - Only supports import() and will not use preload or modulepreload.
  */
-export function hoistImportDeps(options: HoistImportDepsOptions): Plugin {
+export function hoistImportDeps(options?: HoistImportDepsOptions): Plugin {
   options = options || {};
   options.baseUrl =
     typeof options.baseUrl === 'string' ? canonicalize(options.baseUrl) : '';
 
   // Get the static deps of a chunk and return them as list of strings
   // that can be passed as arguments to module preload method(__loadeDeps).
-  const getDeps = (chunkName: string, caller: string, bundle: OutputBundle) => {
+  function getDeps(chunkName: string, caller: string, bundle: OutputBundle) {
     let name = chunkName.startsWith('./') ? chunkName.substring(2) : chunkName;
 
     const chunk = bundle[name];
@@ -61,7 +62,7 @@ export function hoistImportDeps(options: HoistImportDepsOptions): Plugin {
     } else {
       return '';
     }
-  };
+  }
 
   return {
     name: 'hoist-import-deps',
@@ -75,10 +76,8 @@ export function hoistImportDeps(options: HoistImportDepsOptions): Plugin {
 
     /**
      * Add a virtual module for preloading dependencies.
-     * @param {string} id
-     * @returns {string | null}
      */
-    load(id) {
+    load(id: string): string | null {
       if (id === VIRTUAL_ID_IMPORT) {
         // Use link preload for deps and dynamic import for baseImport.
         // When window.HOIST_PREFETCH is true, use link prfetch for deps and baseImport.
@@ -132,22 +131,21 @@ export function __loadDeps(baseImport, ...deps) {
         return null;
       }
 
-      let ast: any = null;
+      let ast: AcornNode | null = null;
       try {
         ast = this.parse(code);
-      } catch (err) {
-        this.warn({
-          code: 'PARSE_ERROR',
-          message: `rollup-plugin-hoist-import-deps: failed to parse ${id}.\n${err}`,
-        });
+      } catch (err: any) {
+        err.message += ` in ${id}`;
+        throw err;
       }
+
       if (!ast) {
         return null;
       }
 
       const magicString = new MagicString(code);
       let hasDynamicImport = false;
-      walk(ast, {
+      walk(ast as any, {
         enter(node: any) {
           if (node.type === 'ImportExpression') {
             hasDynamicImport = true;
@@ -165,7 +163,9 @@ export function __loadDeps(baseImport, ...deps) {
 
         return {
           code: magicString.toString(),
-          map: magicString.generateMap({ hires: true }),
+          map: options!.sourceMap
+            ? magicString.generateMap({ hires: true })
+            : null,
         };
       }
     },
