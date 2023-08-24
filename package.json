@@ -1,12 +1,13 @@
 {
   "name": "so-rollup-plugins-utils",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": "Simple Organization",
   "scripts": {
     "build": "tsc && rollup -c",
     "dev": "rollup -c -w",
     "prepack": "npm run build",
-    "test": "playwright test -c playwright-ct.config.ts"
+    "test": "playwright test -c playwright-ct.config.ts",
+    "patch": "npm version patch --no-git-tag-version"
   },
   "dependencies": {
     "acorn-jsx": "^5.3.2",

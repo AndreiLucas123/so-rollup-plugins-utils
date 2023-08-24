@@ -54,11 +54,12 @@ export function hoistImportDeps(options?: HoistImportDepsOptions): Plugin {
       : importBase;
 
     const calleImports = chunkCaller.imports;
+    const fileName = chunkCaller.fileName;
 
     const chunk = bundle[name];
     if (chunk && 'imports' in chunk && chunk.imports.length > 0) {
       const ret = chunk.imports
-        .filter((s) => s !== chunkCaller.name && !calleImports.includes(s))
+        .filter((s) => s !== fileName && !calleImports.includes(s))
         .map((s) => {
           if (/^https?:\/\//.test(s) || s.startsWith('/')) {
             return `"${s}"`;
