@@ -1,4 +1,4 @@
-import type { Plugin, OutputBundle, AcornNode } from 'rollup';
+import type { Plugin, OutputBundle, AcornNode, OutputChunk } from 'rollup';
 import { walk } from 'estree-walker';
 import MagicString from 'magic-string';
 
@@ -44,13 +44,21 @@ export function hoistImportDeps(options?: HoistImportDepsOptions): Plugin {
 
   // Get the static deps of a chunk and return them as list of strings
   // that can be passed as arguments to module preload method(__loadeDeps).
-  function getDeps(chunkName: string, caller: string, bundle: OutputBundle) {
-    let name = chunkName.startsWith('./') ? chunkName.substring(2) : chunkName;
+  function getDeps(
+    importBase: string,
+    chunkCaller: OutputChunk,
+    bundle: OutputBundle,
+  ) {
+    let name = importBase.startsWith('./')
+      ? importBase.substring(2)
+      : importBase;
+
+    const calleImports = chunkCaller.imports;
 
     const chunk = bundle[name];
     if (chunk && 'imports' in chunk && chunk.imports.length > 0) {
       const ret = chunk.imports
-        .filter((s) => s !== caller)
+        .filter((s) => s !== chunkCaller.name && !calleImports.includes(s))
         .map((s) => {
           if (/^https?:\/\//.test(s) || s.startsWith('/')) {
             return `"${s}"`;
@@ -239,7 +247,7 @@ export function __loadDeps(baseImport, ...deps) {
                 magicString.overwrite(
                   node.start,
                   node.end,
-                  getDeps(importChunkName, chunkName, bundle),
+                  getDeps(importChunkName, chunk, bundle),
                 );
               }
             }

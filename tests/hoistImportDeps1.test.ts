@@ -24,8 +24,6 @@ function load() {
   // @ts-ignore
   const output = plugin.transform(code, 'test.ts');
 
-  console.log('[output]', output);
-
   expect(output.code).toMatchSnapshot();
 });
 
